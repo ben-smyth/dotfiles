@@ -3,6 +3,8 @@ dotfiles/.config/tmux/plugins/
 # by default ignore everything inside config
 dotfiles/.config/*
 
+*.swp
+
 # whitelist the files required
 !dotfiles/.config/tmux/tmux.conf
 !dotfiles/.config/nvim/*
