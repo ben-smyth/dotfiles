@@ -1,3 +1,4 @@
+[general]
 live_config_reload = true
 
 [bell]
@@ -8,7 +9,7 @@ duration = 0
 draw_bold_text_with_bright_colors = true
 
 [env]
-TERM = "term-256color"
+TERM = "xterm-256color"
 
 [font]
 size = 18
@@ -34,12 +35,12 @@ x = 0
 y = 0
 
 [mouse]
-hide_when_typing = true
+hide_when_typing = false
 
-[[keyboard.bindings]]
-key = "Space"
-mods = "Control"
-chars = "\u0000"
+# [[keyboard.bindings]]
+# key = "Space"
+# mods = "Control"
+# chars = "\u0000"
 
 [selection]
 semantic_escape_chars = ",│`|:\"' ()[]{}<>"
