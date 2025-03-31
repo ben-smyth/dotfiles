@@ -1,2 +1,0 @@
-wsl --update
-ubuntu.exe

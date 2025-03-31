@@ -12,18 +12,12 @@ multissh() {
     tmux set-window-option synchronize-panes on > /dev/null
 }
 
-updateDotFiles() {
-    # function to update my dotfiles by git pulling and running install
-    git -C ${HOME}/installs_bs pull
-    source ${HOME}/.zshrc
-}
-
-run_script() {
-    ${HOME}/installs_bs/run.sh
-}
-
 getCheatSheet() {
-    # remind me of critical hotkeys
+    # remind me of critical hotkeys and commands
 
 }
 
+updateHostWithNix() {
+    # update a host using nix flakes
+
+}

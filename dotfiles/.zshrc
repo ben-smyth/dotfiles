@@ -74,13 +74,9 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 # Aliases
 source "$HOME/.ben_scripts.sh"
 alias ls='ls -al --color'
-alias vim='nvim'
-alias vi='nvim'
+alias n='nvim'
+alias vi='vim'
 alias c='clear'
-alias dfup='updateDotFiles'
-alias show='getCheatSheet'
-alias binstall='run_script'
-alias cat='bat'
 
 ## always use zoxide to cd
 alias cd='z'
@@ -104,6 +100,7 @@ export EDITOR=nvim
 export TERM=xterm-256color
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+export TEST=true
 
 unset COLORTERM # breaks k9s if set
 
