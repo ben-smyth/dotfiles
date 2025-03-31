@@ -1,68 +1,38 @@
 {
-  description = "Ben's Minimal-Shell";
+  description = "Ben's Minimal Shell";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     home-manager.url = "github:nix-community/home-manager/release-24.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew?ref=refs/pull/71/merge";
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = false;
-    };
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = false;
-    };
-    homebrew-bundle = {
-      url = "github:homebrew/homebrew-bundle";
-      flake = false;
-    };
   };
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    nix-homebrew,
-    home-manager,
-    homebrew-core,
-    homebrew-cask,
-    homebrew-bundle,
-    ...
-    }: let
-      configuration = {
-        pkgs,
-        config,
-        ...
-        }: {
-          nixpkgs.config.allowUnfree = true;
-          environment.systemPackages = [
-            pkgs.vim
-            pkgs.go
-            pkgs.python3Full
-            pkgs.git
-            pkgs.tmux
-            pkgs.neovim
-            pkgs.fzf
-            pkgs.cargo
-            pkgs.nodejs_23
-            pkgs.ripgrep
-          ];
-
-          homebrew = {
-            enable = true;
-            brews = [
-            ];
-            casks = [
-            ];
-            onActivation.cleanup = "zap";
-            onActivation.autoUpdate = true;
-            onActivation.upgrade = true;
-          };
-
-          nix.settings.experimental-features = "nix-command flakes";
-
+  outputs = { self, nixpkgs, flake-utils, home-manager, ... }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
         };
-    in {
-    };
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            vim
+            go
+            python3Full
+            git
+            tmux
+            neovim
+            fzf
+            cargo
+            nodejs_23
+            ripgrep
+          ];
+          shellHook = ''
+            echo "Welcome to Ben's Minimal Shell!"
+          '';
+        };
+      });
 }
