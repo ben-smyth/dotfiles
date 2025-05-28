@@ -19,6 +19,7 @@
       {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
+            opentofu
             vim
             go
             python3Full

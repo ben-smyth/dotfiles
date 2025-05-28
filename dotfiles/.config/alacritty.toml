@@ -37,10 +37,10 @@ y = 0
 [mouse]
 hide_when_typing = false
 
-# [[keyboard.bindings]]
-# key = "Space"
-# mods = "Control"
-# chars = "\u0000"
+[[keyboard.bindings]]
+key = "Space"
+mods = "Control"
+chars = "\u0000"
 
 [selection]
 semantic_escape_chars = ",│`|:\"' ()[]{}<>"

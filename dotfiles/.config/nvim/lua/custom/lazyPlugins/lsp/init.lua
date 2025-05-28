@@ -1,21 +1,20 @@
 -- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
 -- the above link provides the name required for this list
 local declared_servers = {
-	"pyright",
 	"gopls",
 	"lua_ls",
+	"terraformls",
 	"html",
-	-- "htmx",
 	"cssls",
-	-- "groovyls",
 	"dockerls",
 	"docker_compose_language_service",
 	"ansiblels",
 	"yamlls",
 	"jsonls",
 	"puppet",
-	"ruby_lsp",
-	"bashls"
+	"bashls",
+	"nil_ls",
+	"pylsp"
 }
 
 return {

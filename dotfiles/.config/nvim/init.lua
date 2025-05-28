@@ -23,7 +23,7 @@ require("lazy").setup({
   { import = "custom.lazyPlugins.lsp.init" },
 }, {
     defaults = { lazy = false },
-    checker = { enabled = true },
+    checker = { enabled = true , notify = false },
     ui = { border = "rounded" },
     performance = {
       cache = {
@@ -33,6 +33,8 @@ require("lazy").setup({
     debug = false,
   })
 
+vim.cmd 'colorscheme material'
+vim.g.material_style = "deep ocean"
 
 require("custom.scripts")
 require("custom.keymaps")

@@ -1,5 +1,7 @@
 { config, pkgs, ... }:
 {
-  programs.git = import ./git.nix;
-  programs.tmux = import ./tmux.nix;
+  imports = [
+    ./git.nix
+    ./tmux.nix
+  ];
 }
