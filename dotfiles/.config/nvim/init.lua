@@ -35,6 +35,8 @@ require("lazy").setup({
 
 vim.cmd 'colorscheme material'
 vim.g.material_style = "deep ocean"
+vim.treesitter.language.register('hcl', 'terraform')
+vim.treesitter.language.register('hcl', 'tf')
 
 require("custom.scripts")
 require("custom.keymaps")

@@ -123,14 +123,30 @@ return {
 				nmap("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
 			end
 
-			local lspconfig = require('lspconfig')
-			local servers = declared_servers
+			local default_caps = vim.lsp.protocol.make_client_capabilities()
+			local blink_caps   = require("blink.cmp").get_lsp_capabilities()
 
-			for _, server in ipairs(servers) do
-				lspconfig[server].setup {
-					capabilities = require('blink.cmp').get_lsp_capabilities(), -- Get capabilities here
-					on_attach = on_attach,
-				}
+			local capabilities = vim.tbl_deep_extend("force", default_caps, blink_caps)
+			capabilities.workspace.didChangeWatchedFiles = {
+				dynamicRegistration    = true,
+				relativePatternSupport = true,
+			}
+
+			local lspconfig = require("lspconfig")
+
+			for _, server in ipairs(declared_servers) do
+				-- try to load servers/<name>.lua; fall back to empty table
+				local ok, server_opts = pcall(require, "servers." .. server)
+				if not ok then server_opts = {} end
+
+				local opts = vim.tbl_deep_extend("force", {
+					capabilities = capabilities,
+					on_attach    = on_attach,
+				},
+					server_opts
+				)
+
+				lspconfig[server].setup(opts)
 			end
 		end,
 	},

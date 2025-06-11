@@ -3,7 +3,6 @@ return {
   dependencies = {
     'nvim-treesitter/nvim-treesitter-textobjects',
   },
-  -- version = "v0.9.3",
   build = ':TSUpdate',
   event = { 'BufReadPost', 'BufNewFile' },
   config = function()
@@ -26,6 +25,7 @@ return {
         'markdown',
         'markdown_inline',
         'html',
+        'hcl',
       },
       sync_install = true,
       auto_install = true,
@@ -38,3 +38,4 @@ return {
     }
   end,
 }
+
