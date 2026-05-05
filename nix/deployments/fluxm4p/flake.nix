@@ -37,11 +37,13 @@
           environment.systemPackages = [
             pkgs.vim
             pkgs.go
-            pkgs.python3Full
+            pkgs.python312Full
+            pkgs.python312Packages.pip
             pkgs.pipx
             pkgs.pipenv
             pkgs.awscli2
             pkgs.alacritty
+            pkgs.arping
             pkgs.git
             pkgs.obsidian
             pkgs.google-chrome
@@ -69,6 +71,7 @@
             enable = true;
             brews = [
               "mas"
+              "sshpass"
             ];
             casks = [
               "docker"

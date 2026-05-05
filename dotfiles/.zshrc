@@ -78,6 +78,7 @@ alias n='nvim'
 alias vi='vim'
 alias c='clear'
 alias tf='tofu'
+alias opi='eval $(op signin)'
 
 ## always use zoxide to cd
 alias cd='z'
