@@ -107,7 +107,7 @@ return {
 			})
 			require("mason-lspconfig").setup({
 				ensure_installed = declared_servers,
-				automatic_installation = true,
+				automatic_enable = false,
 			})
 
 			-- Define on_attach function
@@ -132,8 +132,6 @@ return {
 				relativePatternSupport = true,
 			}
 
-			local lspconfig = require("lspconfig")
-
 			for _, server in ipairs(declared_servers) do
 				-- try to load servers/<name>.lua; fall back to empty table
 				local ok, server_opts = pcall(require, "servers." .. server)
@@ -146,7 +144,8 @@ return {
 					server_opts
 				)
 
-				lspconfig[server].setup(opts)
+				vim.lsp.config(server, opts)
+				vim.lsp.enable(server)
 			end
 		end,
 	},

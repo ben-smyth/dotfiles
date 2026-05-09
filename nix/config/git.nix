@@ -3,10 +3,11 @@
   programs.git = { 
     enable = true;
     lfs.enable = true;
-    userName = "ben-smyth";
-    userEmail = "ben.df.smyth@gmail.com";
-
-    extraConfig = {
+    settings = {
+      user = {
+        name = "ben-smyth";
+        email = "ben.df.smyth@gmail.com";
+      };
       pull = {
         rebase = true;
       };

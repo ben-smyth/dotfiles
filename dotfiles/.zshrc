@@ -96,6 +96,9 @@ alias bash='/opt/homebrew/bin/bash'
 # PATH
 export PATH=$PATH:$HOME/.local/bin 
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin/
+export NPM_CONFIG_PREFIX="${NPM_CONFIG_PREFIX:-$HOME/.npm-global}"
+path=("$NPM_CONFIG_PREFIX/bin" $path)
+typeset -U path PATH
 
 # VARS
 export EDITOR=nvim

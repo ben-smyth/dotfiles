@@ -1,24 +1,14 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 let
   catppuccin = pkgs.tmuxPlugins.mkTmuxPlugin {
     pluginName = "catppuccin";
-    version = "unstable-2023-01-06";
-    src = pkgs.fetchFromGitHub {
-      owner = "dreamsofcode-io";
-      repo = "catppuccin-tmux";
-      rev = "main";
-      sha256 = "sha256-FJHM6LJkiAwxaLd5pnAoF3a7AE1ZqHWoCpUJE0ncCA8=";
-    };
+    version = "flake-input";
+    src = inputs.catppuccin-tmux;
   };
   tokyo-night = pkgs.tmuxPlugins.mkTmuxPlugin {
     pluginName = "tokyo-night";
-    version = "unstable-2023-01-06";
-    src = pkgs.fetchFromGitHub {
-      owner = "janoamaral";
-      repo = "tokyo-night-tmux";
-      rev = "master";
-      sha256 = "sha256-3rMYYzzSS2jaAMLjcQoKreE0oo4VWF9dZgDtABCUOtY=";
-    };
+    version = "flake-input";
+    src = inputs.tokyo-night-tmux;
   };
 
 in

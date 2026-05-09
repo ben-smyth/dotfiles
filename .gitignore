@@ -1,5 +1,9 @@
 dotfiles/.config/tmux/plugins/
 
+# Nix build output symlinks.
+result
+result-*
+
 # by default ignore everything inside config
 dotfiles/.config/*
 
