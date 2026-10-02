@@ -18,15 +18,15 @@ Keep out of Git:
   state.
 
 Repo-root `AGENTS.md` and `CLAUDE.md` files should not live in this dotfiles
-repo unless the dotfiles repo needs project-specific overrides. Home Manager
-links `.agents/AGENTS.md` into global locations instead:
+repo unless the dotfiles repo needs project-specific instructions. Home Manager
+links `.agents/AGENTS.md` into global locations:
 
 - `~/.codex/AGENTS.md`
 - `~/.claude/CLAUDE.md`
 
 For other repositories, prefer this pattern:
 
-- `.agents/AGENTS.md` as the canonical repo-specific source.
-- `AGENTS.md -> .agents/AGENTS.md` for Codex and other AGENTS-compatible tools.
-- `CLAUDE.md -> .agents/AGENTS.md` for Claude Code, unless that repo already
-  uses `.claude/CLAUDE.md`.
+- `AGENTS.md` as the canonical repo-specific source for Codex and other
+  AGENTS-compatible tools.
+- `CLAUDE.md -> AGENTS.md` for Claude Code when symlinks are suitable.
+- A tiny `CLAUDE.md` containing `@AGENTS.md` when a symlink is not suitable.

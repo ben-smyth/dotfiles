@@ -10,6 +10,7 @@ pkgs.mkShell {
     opentofu
     python3
     ripgrep
+    tree-sitter
     tmux
     vim
   ];

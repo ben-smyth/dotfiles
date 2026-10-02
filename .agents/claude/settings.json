@@ -1,0 +1,43 @@
+{
+  "model": "opus",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nohup /usr/bin/afplay /System/Library/Sounds/Ping.aiff >/dev/null 2>&1 &",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nohup /usr/bin/afplay /System/Library/Sounds/Ping.aiff >/dev/null 2>&1 &",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  },
+  "feedbackDrafts": "off",
+  "effortLevel": "xhigh",
+  "fastMode": true,
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-daltonized",
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  }
+}

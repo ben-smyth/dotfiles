@@ -3,10 +3,17 @@
 ## Scope
 
 These instructions are personal defaults for agent sessions on this machine.
-Project-level instruction files may add more specific guidance.
+They should stay project-agnostic. Put repository-specific guidance in that
+repository's `AGENTS.md`.
 
 ## Working Rules
 
+- Default to review-first work. Inspect the relevant files and explain the
+  proposed change before editing, unless the user explicitly asks for immediate
+  implementation.
+- Do not run `git` commands, create commits, push, pull, branch, rebase, reset,
+  stage files, or use Git to inspect state unless the user explicitly asks for a
+  Git operation.
 - Read the relevant files before changing behavior. Prefer existing repo
   patterns over new structure.
 - Preserve user work. The tree may be dirty; do not revert changes you did not
@@ -16,40 +23,29 @@ Project-level instruction files may add more specific guidance.
 - Do not commit secrets, machine state, histories, caches, sessions, logs, or
   SQLite databases.
 
-## Agent Config
+## Global Agent Config
 
-- `~/dotfiles/.agents/AGENTS.md` is the canonical shared instruction file.
-- Home Manager links this file into global agent locations.
+- `~/dotfiles/.agents/AGENTS.md` is the canonical global instruction source.
+- Home Manager links this file into both global agent locations.
 - `~/.codex/AGENTS.md` is the global Codex instruction file.
 - `~/.claude/CLAUDE.md` is the global Claude Code instruction file.
 - Edit the canonical `.agents/AGENTS.md` source, not the symlinked files under
   `~/.codex` or `~/.claude`.
 - Do not copy live `~/.codex` or `~/.claude` directories into this repo.
-- If tool-specific instructions are needed later, put them under `.agents/`
-  and keep live app state outside Git.
+- If global tool-specific instructions are needed later, put the versioned
+  source under `.agents/` and keep live app state outside Git.
 
 ## Repo-Level Agent Instructions
 
 When adding or updating repo-specific agent instructions:
 
-- Prefer `.agents/AGENTS.md` as the canonical source inside the repo.
-- If `.agents/AGENTS.md` is missing and repo-specific guidance is requested,
-  create it before adding compatibility links.
-- For Codex and AGENTS-compatible tools, create a repo-root `AGENTS.md` symlink
-  to `.agents/AGENTS.md` when one does not already exist.
-- For Claude Code, create a repo-root `CLAUDE.md` symlink to
-  `.agents/AGENTS.md`, unless the repo already uses `.claude/CLAUDE.md`.
+- Prefer repo-root `AGENTS.md` as the canonical shared instruction file.
+- For Claude Code, create repo-root `CLAUDE.md` as a symlink to `AGENTS.md`
+  when possible. If symlinks are not suitable, use a tiny `CLAUDE.md` that
+  imports `@AGENTS.md`.
+- Do not use `.codex/` or `.claude/` as the only repo instruction location
+  unless the user explicitly asks for a tool-specific setup.
 - Do not overwrite a real `AGENTS.md`, `CLAUDE.md`, or `.claude/CLAUDE.md`
-  without checking with the user.
-- Make instruction updates in `.agents/AGENTS.md`, not in symlink files or live
-  `.codex` / `.claude` state directories.
-
-## Dotfiles Repo
-
-When working in `~/dotfiles`:
-
-- Home Manager dotfile links are defined in `nix/modules/home/files.nix`.
-- Prefer out-of-store symlinks for editable dotfiles.
-- Use `nix/scripts/update_system.sh <configuration> --no-update --build-only`
-  for build-only checks when practical.
-- Avoid leaving Nix `result*` links in the repo.
+  without checking with the user first.
+- Keep repo instruction files focused on project facts: layout, build and test
+  commands, conventions, and project-specific constraints.

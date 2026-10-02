@@ -19,10 +19,18 @@
     enable = true;
     brews = [
       "mas"
+      "fd"
+      "git-delta"
+      "eza"
+      "tldr"
     ];
     casks = [
       "sublime-text"
+      "jordanbaird-ice"
       "swish"
+      "1password"
+      "1password-cli"
+      "docker"
     ];
     onActivation = {
       autoUpdate = false;

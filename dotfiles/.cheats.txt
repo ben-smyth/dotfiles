@@ -1,0 +1,21 @@
+# Curated cheats for the shell MOTD.
+# Format: name|example|description
+# Lines starting with # and blank lines are ignored.
+
+multissh|multissh host1 host2 host3|opens a tmux window with SSH panes, input synced across all
+hmup|hmup|update home-manager and exec a fresh login shell
+hmnews|hmnews|show home-manager news since last generation
+updateHostWithNix|updateHostWithNix|update flake inputs and rebuild the system
+rebuildHostWithNix|rebuildHostWithNix|rebuild the system without updating flake inputs
+updateNvimPlugins|updateNvimPlugins|update neovim plugins via the nix script
+updateShellPlugins|updateShellPlugins|zinit self-update + refresh all shell plugins
+opi|opi|sign in to 1Password CLI (eval $(op signin))
+gd|gd|git diff piped through delta for syntax-highlighted output
+gpo|gpo main|git push origin <branch>
+gs|gs|git status (OMZP::git also gives gst, gss, etc.)
+dir|dir|eza --icons — prettier ls with file-type icons
+n|n path/to/file|open a file in nvim
+tf|tf plan|opentofu (tf = tofu)
+cd|cd partial-name|zoxide jump — frecency-based, no full path needed
+delta|cmd | delta|pipe any diff into delta for syntax highlighting
+p10k|p10k configure|rerun the powerlevel10k prompt configurator

@@ -5,11 +5,6 @@ let
     version = "flake-input";
     src = inputs.catppuccin-tmux;
   };
-  tokyo-night = pkgs.tmuxPlugins.mkTmuxPlugin {
-    pluginName = "tokyo-night";
-    version = "flake-input";
-    src = inputs.tokyo-night-tmux;
-  };
 
 in
   {
@@ -25,7 +20,6 @@ in
     terminal = "screen-256color";
 
     plugins = with pkgs.tmuxPlugins; [
-      tokyo-night
       vim-tmux-navigator
       yank
       catppuccin
@@ -71,23 +65,33 @@ in
     bind -n M-H previous-window
     bind -n M-L next-window
 
-    set -g @tokyo-night-tmux_window_id_style hsquare
-    set -g @tokyo-night-tmux_show_datetime 0
-
     # set vi-mode
     set-window-option -g mode-keys vi
 
     # theme
     set -g @catppuccin_flavour 'mocha'          # latte, frappe, macchiato, mocha
     set -g @catppuccin_window_tabs_enabled on   # move windows into centre tabs
-    set -g @catppuccin_date_time "%a %d %b %H:%M"
-    set -g @catppuccin_user on
-    set -g @catppuccin_host on
-    set -g @catppuccin_right_separator  ""
-    set -g @catppuccin_left_separator ""
+    set -g @catppuccin_user off
+    set -g @catppuccin_host off
+    set -g @catppuccin_right_separator  ""
+    set -g @catppuccin_left_separator ""
 
     # load the theme (must be *after* the settings above)
     run-shell ${catppuccin}/share/tmux-plugins/catppuccin/catppuccin.tmux
+
+    # Transparent calm status line.
+    set -g status-style "fg=#cdd6f4,bg=default"
+    set -g status-left-length 40
+    set -g status-right-length 100
+    set -g status-left "#[fg=#89b4fa,bg=default]󰆍 #S #[fg=#6c7086,bg=default]│ "
+    set -g status-right "#[fg=#a6e3a1,bg=default] #{b:pane_current_path} "
+    set -g window-status-separator " "
+    set -g window-status-format "#[fg=#6c7086,bg=default]#I:#W"
+    set -g window-status-current-format "#[fg=#89b4fa,bg=default]#I:#W"
+    set -g pane-border-style "fg=#45475a,bg=default"
+    set -g pane-active-border-style "fg=#89b4fa,bg=default"
+    set -g message-style "fg=#cdd6f4,bg=default"
+    set -g mode-style "fg=#11111b,bg=#89b4fa"
 
     # keybindings
     bind-key -T copy-mode-vi v send-keys -X begin-selection

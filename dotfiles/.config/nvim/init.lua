@@ -33,6 +33,26 @@ require("lazy").setup({
     debug = false,
   })
 
+-- Keep compatible parser directories ahead of stale parser artifacts that can be
+-- left in lazy.nvim plugin checkouts after nvim-treesitter branch changes.
+local function prefer_stable_treesitter_parsers()
+  local parser_roots = { vim.fn.stdpath('data') .. '/site' }
+
+  for _, parser in ipairs(vim.api.nvim_get_runtime_file('parser/lua.so', true)) do
+    local root = vim.fs.dirname(vim.fs.dirname(parser))
+    if root:match('/lib/nvim$') then
+      table.insert(parser_roots, root)
+    end
+  end
+
+  for index = #parser_roots, 1, -1 do
+    vim.opt.runtimepath:remove(parser_roots[index])
+    vim.opt.runtimepath:prepend(parser_roots[index])
+  end
+end
+
+prefer_stable_treesitter_parsers()
+
 vim.cmd 'colorscheme material'
 vim.g.material_style = "deep ocean"
 vim.treesitter.language.register('hcl', 'terraform')
