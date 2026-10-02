@@ -13,12 +13,23 @@
 
   homebrew = {
     brews = [
+      "argocd"
+      "arp-scan"
+      "d2"
+      "gh"
+      "helm"
+      "nmap"
+      "openjdk"
+      "pre-commit"
       "sshpass"
+      "tflint"
     ];
     casks = [
       "1password"
       "1password-cli"
       "docker"
+      "openwebstart"
+      "xquartz"
     ];
   };
 

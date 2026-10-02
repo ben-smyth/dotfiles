@@ -9,6 +9,7 @@ result-*
 dotfiles/.config/*
 
 *.swp
+nvim.log
 
 # whitelist the files required
 !dotfiles/.config/tmux/tmux.conf
