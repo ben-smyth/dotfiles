@@ -119,6 +119,16 @@ Run each step on its own and wait for it to finish.
    sudo rm -f /Library/LaunchDaemons/systems.determinate.nix-installer.nix-hook.plist
    ```
 
+   Then remove the copied nix-darwin links in `/etc`, restoring the original
+   files nix-darwin set aside. Without this, downloads fail with "error adding
+   trust anchors from file: /etc/ssl/certs/ca-certificates.crt".
+
+   ```sh
+   for f in $(find /etc/ -type l -lname '/etc/static/*' 2>/dev/null); do sudo rm "$f"; [ -e "$f.before-nix-darwin" ] && sudo mv "$f.before-nix-darwin" "$f"; done
+   sudo rm -f /etc/static
+   sudo launchctl kickstart -k system/org.nixos.nix-daemon
+   ```
+
 5. Install Homebrew. After Migration Assistant, remove the old
    Nix-managed `/opt/homebrew` first, because it cannot work without the old
    `/nix` store. Installed apps in `/Applications` are kept and adopted.
