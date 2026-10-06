@@ -156,6 +156,15 @@ Run each step on its own and wait for it to finish.
    The first line pair enables Touch ID for `sudo`. The last line removes
    app copies left by the old nix-darwin setup.
 
+8. After Migration Assistant, list anything else still pointing at the old
+   machine's Nix store or Homebrew: Python environments, launch jobs, `/etc`
+   links and the Nix volume entry in `/etc/fstab`. The script only reports and
+   prints a fix for each item.
+
+   ```sh
+   ~/dotfiles/nix/scripts/find_migration_leftovers.sh
+   ```
+
 ## Moving an Existing nix-darwin Mac
 
 Machines set up before nix-darwin was removed need a one-time change:
