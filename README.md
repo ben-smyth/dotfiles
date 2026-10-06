@@ -106,6 +106,19 @@ Run each step on its own and wait for it to finish.
    rm -rf ~/.nix-profile ~/.local/state/nix ~/.local/state/home-manager ~/.cache/nix
    ```
 
+   Also replace the migrated Nix daemon service, which points at a nix-daemon
+   in the old store. Without this, `nix` fails with "opening lock file
+   /nix/var/nix/db/big-lock: Permission denied". The last two lines remove
+   old nix-darwin and Determinate boot jobs that can no longer run.
+
+   ```sh
+   sudo launchctl bootout system/org.nixos.nix-daemon
+   sudo cp /nix/var/nix/profiles/default/Library/LaunchDaemons/org.nixos.nix-daemon.plist /Library/LaunchDaemons/
+   sudo launchctl bootstrap system /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+   sudo rm -f /Library/LaunchDaemons/org.nixos.activate-system.plist
+   sudo rm -f /Library/LaunchDaemons/systems.determinate.nix-installer.nix-hook.plist
+   ```
+
 5. Install Homebrew. After Migration Assistant, remove the old
    Nix-managed `/opt/homebrew` first, because it cannot work without the old
    `/nix` store. Installed apps in `/Applications` are kept and adopted.
