@@ -10,7 +10,7 @@ in `/etc` is managed.
 |---|---|
 | Command-line tools for every Mac | `nix/modules/home/packages.nix` |
 | Command-line tools for one Mac | `nix/hosts/<host>/default.nix` |
-| Mac GUI apps (casks) for every Mac | `homebrew/Brewfile` |
+| Mac GUI apps (casks) for every Mac | `homebrew/Brewfile` (self-updating apps may stay unmanaged; list them in the host Brewfile comment) |
 | Casks, App Store apps, odd formulae for one Mac | `homebrew/<host>.Brewfile` |
 | Dotfiles | `dotfiles/`, linked by `nix/modules/home/files.nix` |
 | macOS user settings (Dock, Finder, ...) | `nix/modules/home/macos.nix` or the host file |
