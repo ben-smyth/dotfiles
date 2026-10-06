@@ -10,6 +10,16 @@ if [[ -f "/opt/homebrew/bin/brew" ]] then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+# Nix. macOS updates can reset /etc/zshrc, so load the daemon profile here too.
+if [[ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+  source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+fi
+
+# Home Manager session variables (standalone Home Manager).
+if [[ -e "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh" ]]; then
+  source "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+fi
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -116,8 +126,6 @@ alias gs='git status'
 alias gpo='git push origin'
 alias gp='git pull'
 alias gd='git diff | delta'
-
-alias bash='/opt/homebrew/bin/bash'
 
 alias dir='eza --long --icons --git -a'
 alias tree='eza --long --icons --git --tree -a --git-ignore'

@@ -1,0 +1,22 @@
+# Shared Homebrew packages for every machine.
+#
+# Rule of thumb:
+#   - Command-line tools go in nix/modules/home/packages.nix (nixpkgs).
+#   - Mac GUI apps go here as casks.
+#   - Machine-specific items go in homebrew/<host>.Brewfile.
+#
+# Apply with nix/scripts/update_system.sh, which runs `brew bundle --global`
+# against the ~/.Brewfile that Home Manager builds from these files.
+
+# Take over apps that already exist in /Applications (for example after
+# Migration Assistant) instead of failing with "already an App".
+cask_args adopt: true
+
+brew "mas"
+
+cask "google-chrome"
+cask "jordanbaird-ice"
+cask "obsidian"
+cask "spotify"
+cask "sublime-text"
+cask "swish"

@@ -5,17 +5,17 @@ usage() {
   cat <<'USAGE'
 Usage: update_system.sh [configuration] [--no-update] [--build-only]
 
-Updates the root flake lock, builds the selected nix-darwin system, then
-switches to it. If configuration is omitted, the script tries to infer it from
-the macOS local host name.
+Applies the Home Manager configuration (CLI tools, dotfiles, macOS user
+settings), then installs the Homebrew packages listed in ~/.Brewfile and
+reports anything Homebrew has installed that the Brewfile does not list.
 
-Configurations:
-  Bens-MacBook-Pro
-  bens-macbook
+Configurations (default: current user):
+  bensmyth   work MacBook Pro (fluxm4p)
+  admin      personal MacBook (bennym4p)
 
 Options:
-  --no-update   Rebuild from the existing flake.lock.
-  --build-only  Build the system but do not switch to it.
+  --no-update   Keep flake.lock and skip Homebrew's auto-update.
+  --build-only  Build the Home Manager configuration without applying it.
 USAGE
 }
 
@@ -24,30 +24,25 @@ configuration=""
 update_lock=1
 switch_system=1
 
+# Flakes may not be enabled yet on a fresh machine; Home Manager enables them
+# in ~/.config/nix/nix.conf after the first switch.
+export NIX_CONFIG="experimental-features = nix-command flakes${NIX_CONFIG:+
+$NIX_CONFIG}"
+
 remove_nix_result_links() {
   local link_path
-  local target
-
   for link_path in "$repo_root"/result "$repo_root"/result-*; do
     [[ -L "$link_path" ]] || continue
-
-    target="$(readlink "$link_path")"
-    case "$target" in
-      /nix/store/*)
-        rm -- "$link_path"
-        ;;
+    case "$(readlink "$link_path")" in
+      /nix/store/*) rm -- "$link_path" ;;
     esac
   done
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --no-update)
-      update_lock=0
-      ;;
-    --build-only | --no-switch)
-      switch_system=0
-      ;;
+    --no-update) update_lock=0 ;;
+    --build-only | --no-switch) switch_system=0 ;;
     -h | --help)
       usage
       exit 0
@@ -63,33 +58,16 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-detect_configuration() {
-  local host_name
-  host_name="$(
-    scutil --get LocalHostName 2>/dev/null ||
-      hostname -s 2>/dev/null ||
-      true
-  )"
+configuration="${configuration:-${USER:-$(/usr/bin/id -un)}}"
 
-  case "$host_name" in
-    Bens-MacBook-Pro | fluxm4p)
-      printf '%s\n' "Bens-MacBook-Pro"
-      ;;
-    bens-macbook | bennym4p)
-      printf '%s\n' "bens-macbook"
-      ;;
-    *)
-      printf '%s\n' "$host_name"
-      ;;
-  esac
-}
-
-configuration="${configuration:-$(detect_configuration)}"
-
-if [[ -z "$configuration" ]]; then
-  echo "Could not infer a darwin configuration. Pass one explicitly." >&2
-  exit 2
-fi
+case "$configuration" in
+  bensmyth | admin) ;;
+  *)
+    echo "Unknown configuration: $configuration" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
 
 cd "$repo_root"
 remove_nix_result_links
@@ -98,13 +76,36 @@ if [[ "$update_lock" -eq 1 ]]; then
   nix flake update
 fi
 
-darwin-rebuild build --flake ".#${configuration}"
-remove_nix_result_links
+if [[ "$switch_system" -eq 0 ]]; then
+  nix run ".#home-manager" -- build --flake ".#${configuration}"
+  remove_nix_result_links
+  exit 0
+fi
 
-if [[ "$switch_system" -eq 1 ]]; then
-  if [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
-    darwin-rebuild switch --flake ".#${configuration}"
-  else
-    sudo darwin-rebuild switch --flake ".#${configuration}"
+nix run ".#home-manager" -- switch -b hm-backup --flake ".#${configuration}"
+
+brew_bin=""
+for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  if [[ -x "$candidate" ]]; then
+    brew_bin="$candidate"
+    break
   fi
+done
+
+if [[ -z "$brew_bin" ]]; then
+  echo "Homebrew is not installed; skipping ~/.Brewfile. Install it from https://brew.sh and rerun." >&2
+  exit 0
+fi
+
+if [[ "$update_lock" -eq 0 ]]; then
+  export HOMEBREW_NO_AUTO_UPDATE=1
+fi
+
+"$brew_bin" bundle install --global
+
+echo
+echo "Checking for Homebrew packages not listed in the Brewfiles..."
+if ! "$brew_bin" bundle cleanup --global; then
+  echo "Add them to homebrew/*.Brewfile (or nixpkgs), or remove them with:" >&2
+  echo "  brew bundle cleanup --global --force" >&2
 fi

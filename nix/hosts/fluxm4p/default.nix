@@ -1,6 +1,8 @@
 { pkgs, ... }:
 {
-  environment.systemPackages = with pkgs; [
+  # Work MacBook Pro. Casks and other Homebrew items: homebrew/fluxm4p.Brewfile.
+  home.packages = with pkgs; [
+    arp-scan
     arping
     awscli2
     jre17_minimal
@@ -8,37 +10,7 @@
     pipenv
     pipx
     python3Packages.pip
+    sshpass
     terraform
-  ];
-
-  homebrew = {
-    brews = [
-      "argocd"
-      "arp-scan"
-      "d2"
-      "gh"
-      "helm"
-      "nmap"
-      "openjdk"
-      "pre-commit"
-      "sshpass"
-      "tflint"
-    ];
-    casks = [
-      "1password"
-      "1password-cli"
-      "docker"
-      "openwebstart"
-      "xquartz"
-    ];
-  };
-
-  system.defaults.dock.persistent-apps = [
-    { app = "${pkgs.alacritty}/Applications/Alacritty.app"; }
-    { app = "${pkgs.obsidian}/Applications/Obsidian.app"; }
-    { app = "${pkgs.google-chrome}/Applications/Google Chrome.app"; }
-    { app = "${pkgs.spotify}/Applications/Spotify.app"; }
-    { app = "/System/Applications/Calendar.app"; }
-    { app = "/System/Applications/System Settings.app"; }
   ];
 }

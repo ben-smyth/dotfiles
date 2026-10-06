@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export PATH="/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
+export PATH="/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
+export NIX_CONFIG="experimental-features = nix-command flakes${NIX_CONFIG:+
+$NIX_CONFIG}"
 
 usage() {
   cat <<'USAGE'
 Usage: update_home.sh [home-configuration]
 
-Applies only the Home Manager configuration from the root flake. This updates
-user-level files, packages, and symlinks without running nix-darwin activation.
+Applies only the Home Manager configuration from the root flake: user-level
+files, packages, symlinks, and macOS user settings. It does not touch
+Homebrew; use update_system.sh for that.
 
 Configurations:
   bensmyth
@@ -53,4 +56,4 @@ case "$configuration" in
 esac
 
 cd "$repo_root"
-nix run ".#home-manager" -- switch --flake ".#${configuration}"
+nix run ".#home-manager" -- switch -b hm-backup --flake ".#${configuration}"

@@ -1,29 +1,11 @@
 {
-  description = "Ben's Darwin systems, Home Manager config, and dev shells";
+  description = "Ben's Home Manager config, Brewfiles, and dev shells";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    nix-darwin.url = "github:LnL7/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = false;
-    };
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = false;
-    };
-    homebrew-bundle = {
-      url = "github:homebrew/homebrew-bundle";
-      flake = false;
-    };
 
     catppuccin-tmux = {
       url = "github:dreamsofcode-io/catppuccin-tmux";
@@ -38,7 +20,6 @@
   outputs = inputs @ {
     self,
     nixpkgs,
-    nix-darwin,
     ...
   }:
     let
@@ -57,64 +38,37 @@
           config.allowUnfree = true;
         };
 
-      mkDarwin = {
-        username,
-        hostModule,
-        homeDirectory ? "/Users/${username}",
-        system ? "aarch64-darwin",
-      }:
-        nix-darwin.lib.darwinSystem {
-          inherit system;
-          specialArgs = {
-            inherit inputs self username homeDirectory;
-          };
-          modules = [
-            inputs.nix-homebrew.darwinModules.nix-homebrew
-            inputs.home-manager.darwinModules.home-manager
-            ./nix/modules/darwin
-            hostModule
-          ];
-        };
-
+      # One Home Manager configuration per machine, named after its user.
+      # `host` selects nix/hosts/<host> and homebrew/<host>.Brewfile.
       mkHome = {
         username,
+        host,
         homeDirectory ? "/Users/${username}",
         system ? "aarch64-darwin",
       }:
         inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = pkgsFor system;
           extraSpecialArgs = {
-            inherit inputs self username homeDirectory;
+            inherit inputs self username homeDirectory host;
           };
           modules = [
             ./nix/modules/home
+            ./nix/hosts/${host}
           ];
         };
     in
     {
-      darwinConfigurations."Bens-MacBook-Pro" = mkDarwin {
-        username = "bensmyth";
-        homeDirectory = "/Users/bensmyth";
-        hostModule = ./nix/hosts/fluxm4p;
-      };
-
-      darwinConfigurations."bens-macbook" = mkDarwin {
-        username = "admin";
-        homeDirectory = "/Users/admin";
-        hostModule = ./nix/hosts/bennym4p;
-      };
-
+      # Work MacBook Pro (fluxm4p).
       homeConfigurations.bensmyth = mkHome {
         username = "bensmyth";
-        homeDirectory = "/Users/bensmyth";
+        host = "fluxm4p";
       };
 
+      # Personal MacBook (bennym4p).
       homeConfigurations.admin = mkHome {
         username = "admin";
-        homeDirectory = "/Users/admin";
+        host = "bennym4p";
       };
-
-      darwinPackages = self.darwinConfigurations."Bens-MacBook-Pro".pkgs;
 
       packages = forAllSystems (system: {
         home-manager = inputs.home-manager.packages.${system}.home-manager;

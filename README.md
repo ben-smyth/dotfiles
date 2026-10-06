@@ -1,141 +1,148 @@
 # Dependency and Dotfile Management
 
-This repo has one root Nix flake for macOS systems, Home Manager config, and a
-minimal development shell.
+One Nix flake drives Home Manager for each Mac. Homebrew handles Mac apps
+through Brewfiles. There is no nix-darwin: nothing runs as root and nothing
+in `/etc` is managed.
 
-## New Mac Setup
+## Where Things Go
 
-Migration Assistant copies the home directory, but not the `/nix` volume, so
-every Home Manager symlink (`~/.zshrc`, `~/.config/nvim`, ...) is dangling
-until Nix is reinstalled and the system is switched. The config assumes an
-Apple Silicon Mac (`aarch64-darwin`).
+| What | Where |
+|---|---|
+| Command-line tools for every Mac | `nix/modules/home/packages.nix` |
+| Command-line tools for one Mac | `nix/hosts/<host>/default.nix` |
+| Mac GUI apps (casks) for every Mac | `homebrew/Brewfile` |
+| Casks, App Store apps, odd formulae for one Mac | `homebrew/<host>.Brewfile` |
+| Dotfiles | `dotfiles/`, linked by `nix/modules/home/files.nix` |
+| macOS user settings (Dock, Finder, ...) | `nix/modules/home/macos.nix` or the host file |
+| Tools for one project | that project's dev shell, not this repo |
 
-1. Install the Xcode Command Line Tools and confirm GitHub SSH access:
-
-   ```sh
-   xcode-select --install
-   ssh -T git@github.com
-   ```
-
-2. Replace the migrated repo copy with a fresh clone:
-
-   ```sh
-   mv ~/dotfiles ~/dotfiles.migrated
-   git clone git@github.com:ben-smyth/dotfiles.git ~/dotfiles
-   ```
-
-3. Install Nix, then open a new terminal:
-
-   ```sh
-   ~/dotfiles/nix/scripts/install_nix.sh
-   ```
-
-4. Build the system with the locked nix-darwin, then switch to it:
-
-   ```sh
-   cd ~/dotfiles
-   nix --extra-experimental-features 'nix-command flakes' \
-     build .#darwinConfigurations.Bens-MacBook-Pro.system
-   sudo ./result/sw/bin/darwin-rebuild switch --flake .#Bens-MacBook-Pro
-   rm result
-   ```
-
-   If activation aborts with "Unexpected files in /etc", rename each listed
-   file and rerun the switch command:
-
-   ```sh
-   sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
-   ```
-
-5. Open a new terminal. Zinit and the Zsh plugins install on first launch,
-   and Neovim plugins install from `lazy-lock.json` on first `nvim`.
-
-6. Optionally match the host name so `update_system.sh` auto-detects the
-   configuration. Do this after the old Mac is off the network:
-
-   ```sh
-   sudo scutil --set LocalHostName Bens-MacBook-Pro
-   ```
-
-## Darwin Systems
-
-Build a system without applying it:
+Try a tool without installing it:
 
 ```sh
-nix/scripts/update_system.sh Bens-MacBook-Pro --no-update --build-only
+nix shell nixpkgs#<package>
 ```
 
-Apply a system:
+Avoid `brew install`, `npm -g`, `pipx install` and `go install` for anything
+you want to keep. Every update run lists Homebrew packages that are installed
+but not in a Brewfile.
 
-```sh
-sudo darwin-rebuild switch --flake .#Bens-MacBook-Pro
-```
+## Machines
 
-The available configurations are:
+| Configuration | User | Host files |
+|---|---|---|
+| `bensmyth` | work MacBook Pro | `nix/hosts/fluxm4p`, `homebrew/fluxm4p.Brewfile` |
+| `admin` | personal MacBook | `nix/hosts/bennym4p`, `homebrew/bennym4p.Brewfile` |
 
-```sh
-Bens-MacBook-Pro
-bens-macbook
-```
+The scripts pick the configuration from the current user name.
 
 ## Updates
 
-Update Nix inputs, build, then switch:
+Update flake inputs, apply Home Manager, then apply the Brewfile:
 
 ```sh
-nix/scripts/update_system.sh Bens-MacBook-Pro
+nix/scripts/update_system.sh
 ```
 
-Rebuild from the existing lock file:
+Do the same from the existing lock file:
 
 ```sh
-nix/scripts/update_system.sh Bens-MacBook-Pro --no-update
+nix/scripts/update_system.sh --no-update
 ```
 
-Apply only Home Manager user files, packages, and symlinks:
+Build without applying:
 
 ```sh
-nix/scripts/update_home.sh bensmyth
+nix/scripts/update_system.sh --no-update --build-only
 ```
 
-From an interactive shell, the equivalent helper is:
+Apply only Home Manager (dotfiles, CLI tools, settings), from a shell:
 
 ```sh
 hmup
 ```
 
-Read Home Manager news for this flake:
+Remove Homebrew packages that are not in any Brewfile:
 
 ```sh
-hmnews
+brew bundle cleanup --global --force
 ```
 
-Build only:
+Other helpers:
 
 ```sh
-nix/scripts/update_system.sh Bens-MacBook-Pro --build-only
+hmnews                          # Home Manager news
+nix/scripts/update_neovim.sh    # Neovim plugins
+updateShellPlugins              # Zinit and Zsh plugins
+nix flake update nixpkgs home-manager
 ```
 
-Update Neovim plugins separately:
+## New Mac Setup
+
+Run each step on its own and wait for it to finish.
+
+1. Accept the Xcode license if Xcode was migrated, then check GitHub access:
+
+   ```sh
+   sudo xcodebuild -license accept
+   ssh -T git@github.com
+   ```
+
+2. Clone the repo:
+
+   ```sh
+   git clone git@github.com:ben-smyth/dotfiles.git ~/dotfiles
+   ```
+
+3. Install Nix, answer yes to its prompts, then open a new terminal:
+
+   ```sh
+   ~/dotfiles/nix/scripts/install_nix.sh
+   ```
+
+4. After Migration Assistant only: remove Nix leftovers that point into the
+   old machine's `/nix` store:
+
+   ```sh
+   rm -rf ~/.nix-profile ~/.local/state/nix ~/.local/state/home-manager ~/.cache/nix
+   ```
+
+5. Install Homebrew. After Migration Assistant, remove the old
+   Nix-managed `/opt/homebrew` first, because it cannot work without the old
+   `/nix` store. Installed apps in `/Applications` are kept and adopted.
+
+   ```sh
+   sudo rm -rf /opt/homebrew
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+6. Apply everything, then open a new terminal:
+
+   ```sh
+   ~/dotfiles/nix/scripts/update_system.sh --no-update
+   ```
+
+7. Optional one-time system settings:
+
+   ```sh
+   sudo rm -f /etc/pam.d/sudo_local
+   sudo sh -c 'echo "auth       sufficient     pam_tid.so" > /etc/pam.d/sudo_local'
+   sudo rm -rf "/Applications/Nix Apps"
+   ```
+
+   The first line pair enables Touch ID for `sudo`. The last line removes
+   app copies left by the old nix-darwin setup.
+
+## Moving an Existing nix-darwin Mac
+
+Machines set up before nix-darwin was removed need a one-time change:
 
 ```sh
-nix/scripts/update_neovim.sh
+sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/master#darwin-uninstaller
 ```
 
-Zsh plugins are still managed by Zinit and can be updated from an interactive
-shell:
-
-```sh
-updateShellPlugins
-```
-
-Target a smaller update when needed:
-
-```sh
-nix flake update nixpkgs home-manager nix-darwin
-nix flake update homebrew-core homebrew-cask homebrew-bundle
-nix flake update catppuccin-tmux tokyo-night-tmux
-```
+Then open a new terminal, check `nix --version` still works, and follow steps
+4 to 7 of New Mac Setup. Step 4 is not needed on a machine that was not
+migrated.
 
 ## Minimal Shell
 
