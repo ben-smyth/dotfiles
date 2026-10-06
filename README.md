@@ -104,6 +104,7 @@ Run each step on its own and wait for it to finish.
 
    ```sh
    rm -rf ~/.nix-profile ~/.local/state/nix ~/.local/state/home-manager ~/.cache/nix
+   rm -f ~/Applications/"Home Manager Apps"
    ```
 
    Also replace the migrated Nix daemon service, which points at a nix-daemon
