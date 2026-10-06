@@ -69,7 +69,7 @@ sys="$(scan_links /etc/ /usr/local /Applications)"
 if [ -n "$sys" ]; then
   found=1
   printf '%s\n' "$sys" | sed 's/^/   /'
-  hint "README step 4 (/etc links); otherwise sudo rm '<path>'"
+  hint "sudo rm '<path>'   (for /etc links, use README step 4 instead)"
 else
   echo "   none"
 fi
@@ -84,6 +84,33 @@ if [ -d "/Applications/Nix Apps" ]; then
   found=1
   echo "   /Applications/Nix Apps"
   hint "sudo rm -rf '/Applications/Nix Apps'"
+else
+  echo "   none"
+fi
+
+section "Old mac-app-util trampoline apps"
+tramp_found=0
+for dir in "/Applications/Nix Trampolines" "$HOME/Applications/Home Manager Trampolines"; do
+  [ -d "$dir" ] || continue
+  tramp_found=1
+  echo "   $dir"
+  for app in "$dir"/*.app; do
+    [ -f "$app/Contents/Resources/Scripts/main.scpt" ] || continue
+    target="$(/usr/bin/osadecompile "$app/Contents/Resources/Scripts/main.scpt" 2>/dev/null | grep -o "/nix/store/[^']*")"
+    [ -n "$target" ] || continue
+    if [ ! -e "$target" ]; then state="broken"; else state="ok"; fi
+    if [ "$state" = "broken" ] || [ "$show_all" -eq 1 ]; then
+      printf '      %s (%s)\n' "$(basename "$app")" "$state"
+    fi
+  done
+  case "$dir" in
+    /Applications/*) hint "sudo rm -rf '$dir'" ;;
+    *) hint "rm -rf '$dir'" ;;
+  esac
+done
+if [ "$tramp_found" -eq 1 ]; then
+  found=1
+  hint "also remove any Dock icons that show a question mark"
 else
   echo "   none"
 fi

@@ -150,11 +150,11 @@ Run each step on its own and wait for it to finish.
    ```sh
    sudo rm -f /etc/pam.d/sudo_local
    sudo sh -c 'echo "auth       sufficient     pam_tid.so" > /etc/pam.d/sudo_local'
-   sudo rm -rf "/Applications/Nix Apps"
+   sudo rm -rf "/Applications/Nix Apps" "/Applications/Nix Trampolines"
    ```
 
    The first line pair enables Touch ID for `sudo`. The last line removes
-   app copies left by the old nix-darwin setup.
+   app copies and mac-app-util launcher apps left by the old nix-darwin setup.
 
 8. After Migration Assistant, list anything else still pointing at the old
    machine's Nix store or Homebrew: Python environments, launch jobs, `/etc`
